@@ -8,8 +8,9 @@ $_ = <>;
 while (m<
     \A
     (.*?)
-    ^
+    (\n|\s*?)
     ([A-Za-z_][A-Za-z0-9_]*?)	# func name
+    (\n|\s*?)
     \(([^\)]*?)\)		# arg names
     \n
     ((?:\s*[^\n]+?;[^\n]*?$)+)?	# arg types
@@ -18,7 +19,7 @@ while (m<
     (\{.*?\n*)
     \Z
 >mosx) {
-	my ($a, $func_name, $arg_names, $arg_types, $b) = ($1, $2, $3, $4, $5);
+	my ($a, $spc_before, $func_name, $spc_after, $arg_names, $arg_types, $b) = ($1, $2, $3, $4, $5, $6, $7);
 
 	#print STDERR 'func_name: ', $func_name, "\n";
 	#print STDERR 'arg_names: ', $arg_names, "\n";
@@ -32,7 +33,9 @@ while (m<
 
 		print
 		    $a,
+		    $spc_before,
 		    $func_name,
+		    $spc_after,
 		    '(',
 		    join(', ',
 			map {
@@ -46,7 +49,9 @@ while (m<
 	} elsif (!$arg_names && !$arg_types) {
 		print
 		    $a,
+		    $spc_after,
 		    $func_name,
+		    $spc_before,
 		    '(void)',
 		    "\n";
 	
@@ -54,7 +59,9 @@ while (m<
 	} else {
 		print
 		    $a,
+		    $spc_after,
 		    $func_name,
+		    $spc_before,
 		    '(',
 		    $arg_names,
 		    ')',
