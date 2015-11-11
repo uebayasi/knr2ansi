@@ -169,15 +169,15 @@ sub parse_arg_types {
 		$line =~ m<
 		    \A
 		    \s*
-		    (.+?)			# $1: type
+		    (.+?)			# type
 		    \s+?
-		    ([*]*?)?			# $2: a
+		    ([*]*?)?			# a
 		    \s*
-		    ([A-Za-z_][A-Za-z0-9_]*?)	# $3: name
-		    (\[\d*?\])?			# $4: b
-		    (,.+?)?			# $5: line
+		    ([A-Za-z_][A-Za-z0-9_]*?)	# name
+		    (\[\d*?\])?			# b
+		    (,.+?)?			# line
 		    ;
-		    (?:.*?)?			# $6: comment, etc.
+		    (?:.*?)?			# comment, etc.
 		    \Z
 		>mosx;
 
@@ -203,15 +203,22 @@ sub parse_arg_types {
 		    \A
 		    ,
 		    \s*
-		    ([*]*?)?			# $1: a
+		    ([*]*?)?			# a
 		    \s*
-		    ([A-Za-z_][A-Za-z0-9_]*?)	# $2: name
-		    (\[\d*?\])?			# $3: b
-		    (,.+?)?			# $4: line
+		    ([A-Za-z_][A-Za-z0-9_]*?)	# name
+		    (\[\d*?\])?			# b
+		    (,.+?)?			# line
 		    \Z
 		>mosx) {
-			$res->{$2} = "$type $1\%s$3";
-			$line = $4;
+			my $x = {
+				'a' => $1,
+				'name' => $2,
+				'b' => $3,
+				'line' => $4,
+			};
+
+			$res->{$x->{name}} = "$type $x->{a}\%s$x->{b}";
+			$line = $x->{line};
 		}
 
 	}
