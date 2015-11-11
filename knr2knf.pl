@@ -65,11 +65,7 @@ sub print_func {
 	dump1($x);
 	if ($x->{arg_names} && $x->{arg_types}) {
 		parse_args($x);
-		$x->{arg_names} = join(', ',
-		    map {
-			sprintf($x->{arg_types}->{$_}, $_);
-		    } @{$x->{arg_names}}
-		);
+		$x->{arg_names} = print_func_arg_names($x);
 	} elsif (!$x->{arg_names} && !$x->{arg_types}) {
 		$x->{arg_names} = 'void';
 	} else {
@@ -180,12 +176,27 @@ sub parse_arg_types {
 	return $res;
 }
 
-# XXX
+# XXX ugly
 sub parse_arg_types_iter {
 	my ($lineref, $res, $x) = @_;
 	dump3($x);
 	$res->{$x->{name}} = "$x->{type} $x->{ptr}\%s$x->{array}";
 	${$lineref} = $x->{line};
+}
+
+sub print_func_arg_names {
+	my ($x) = @_;
+	# XXX Perl not being functional yet!
+	return join(', ',
+		map {
+			print_func_arg($x, $_);
+		} @{$x->{arg_names}}
+	);
+}
+
+sub print_func_arg {
+	my ($x, $name) = @_;
+	sprintf($x->{arg_types}->{$name}, $name);
 }
 
 sub dump3 {
