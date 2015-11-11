@@ -42,16 +42,11 @@ while (m<
 		'zzz' => $8,
 	};
 
-    if ($x->{func_name} =~ m<(?:if|for|while)>) {
+	if ($x->{func_name} =~ m<(?:if|for|while)>) {
 		print $x->{all};
-    } else {
-	dump1($x);
-
-	if ($x->{arg_names} && $x->{arg_types}) {
-		$x->{arg_names} = &parse_arg_names($x->{arg_names});
-		$x->{arg_types} = &parse_arg_types($x->{arg_types});
-		dump2($x);
-
+	} elsif ($x->{arg_names} && $x->{arg_types}) {
+		dump1($x);
+		parse_args($x);
 		print
 		    $x->{aaa},
 		    $x->{spc_before},
@@ -66,6 +61,7 @@ while (m<
 		    ')',
 		    "\n";
 	} elsif (!$x->{arg_names} && !$x->{arg_types}) {
+		dump1($x);
 		print
 		    $x->{aaa},
 		    $x->{spc_before},
@@ -74,6 +70,7 @@ while (m<
 		    '(void)',
 		    "\n";
 	} else {
+		dump1($x);
 		print
 		    $x->{aaa},
 		    $x->{spc_before},
@@ -84,7 +81,6 @@ while (m<
 		    ')',
 		    "\n";
 	}
-    }
 	$_ = $x->{zzz};
 }
 print $_;
@@ -116,6 +112,14 @@ sub dump2 {
 		    $x->{arg_types}->{$t},
 		    "\n";
 	}
+}
+
+sub parse_args {
+	my ($x) = @_;
+
+	$x->{arg_names} = &parse_arg_names($x->{arg_names});
+	$x->{arg_types} = &parse_arg_types($x->{arg_types});
+	dump2($x);
 }
 
 sub parse_arg_names {
