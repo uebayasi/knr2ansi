@@ -1,7 +1,5 @@
 simple K&R -> ANSI decl converter
 
-(assuming input file is already KNF ;)
-
 don't support:
 o macro expansion
 o func pointers
