@@ -54,44 +54,68 @@ sub proc {
 	my ($x) = @_;
 
 	if ($x->{func_name} =~ m<(?:if|for|while)>) {
-		print $x->{all};
+		print_statements($x);
 	} elsif ($x->{arg_names} && $x->{arg_types}) {
-		dump1($x);
-		parse_args($x);
-		print
-		    $x->{aaa},
-		    $x->{spc_before},
-		    $x->{func_name},
-		    $x->{spc_after},
-		    '(',
-		    join(', ',
-			map {
-			    sprintf($x->{arg_types}->{$_}, $_);
-			} @{$x->{arg_names}}
-		    ),
-		    ')',
-		    "\n";
+		print_func_names_types($x);
 	} elsif (!$x->{arg_names} && !$x->{arg_types}) {
-		dump1($x);
-		print
-		    $x->{aaa},
-		    $x->{spc_before},
-		    $x->{func_name},
-		    $x->{spc_after},
-		    '(void)',
-		    "\n";
+		print_func_void($x);
 	} else {
-		dump1($x);
-		print
-		    $x->{aaa},
-		    $x->{spc_before},
-		    $x->{func_name},
-		    $x->{spc_after},
-		    '(',
-		    $x->{arg_names},
-		    ')',
-		    "\n";
+		print_func_misc($x);
 	}
+}
+
+sub print_statements {
+	my ($x) = @_;
+
+	print $x->{all};
+}
+
+sub print_func_names_types {
+	my ($x) = @_;
+
+	dump1($x);
+	parse_args($x);
+	print
+	    $x->{aaa},
+	    $x->{spc_before},
+	    $x->{func_name},
+	    $x->{spc_after},
+	    '(',
+	    join(', ',
+		map {
+		    sprintf($x->{arg_types}->{$_}, $_);
+		} @{$x->{arg_names}}
+	    ),
+	    ')',
+	    "\n";
+}
+
+sub print_func_void {
+	my ($x) = @_;
+
+	dump1($x);
+	print
+	    $x->{aaa},
+	    $x->{spc_before},
+	    $x->{func_name},
+	    $x->{spc_after},
+	    '(void)',
+	    "\n";
+}
+
+sub print_func_misc {
+	my ($x) = @_;
+
+	dump1($x);
+	print
+	    $x->{aaa},
+	    $x->{spc_before},
+	    $x->{func_name},
+	    $x->{spc_after},
+	    '(',
+	    $x->{arg_names},
+	    ')',
+	    "\n";
 }
 
 sub dump1 {
