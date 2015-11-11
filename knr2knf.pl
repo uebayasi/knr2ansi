@@ -122,7 +122,7 @@ sub parse_arg_names {
 	return [split(/[,\s]+/, $arg_names_str)];
 }
 
-# XXX split by ','
+# XXX split by ';', then ','
 # XXX de-duplicate match pattern
 sub parse_arg_types {
 	my ($arg_types) = @_;
