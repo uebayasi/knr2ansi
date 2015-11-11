@@ -119,8 +119,7 @@ sub parse_args {
 
 sub parse_arg_names {
 	my ($arg_names_str) = @_;
-	my @res = split(/[,\s]+/, $arg_names_str);
-	return \@res;
+	return [split(/[,\s]+/, $arg_names_str)];
 }
 
 # XXX split by ','
