@@ -42,6 +42,15 @@ while (m<
 		'zzz' => $8,
 	};
 
+	proc($x);
+
+	$_ = $x->{zzz};
+}
+print $_;
+
+sub proc {
+	my ($x) = @_;
+
 	if ($x->{func_name} =~ m<(?:if|for|while)>) {
 		print $x->{all};
 	} elsif ($x->{arg_names} && $x->{arg_types}) {
@@ -81,9 +90,7 @@ while (m<
 		    ')',
 		    "\n";
 	}
-	$_ = $x->{zzz};
 }
-print $_;
 
 sub dump1 {
 	my ($x) = @_;
