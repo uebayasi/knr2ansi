@@ -2,51 +2,55 @@
 
 use strict;
 
-local $/;
+main();
 
-$_ = <>;
+sub main {
+	local $/;
 
-while (m<
-    \A
-    (				# all
-    (.*?)			# aaa
-    (\n|\s*?)			# spc_before
-    ([A-Za-z_][A-Za-z0-9_]*?)	# func name
-    (\n|\s*?)			# spc_after
-    \s*?
-    \(
-    \s*
-    ([^\)]*?)			# arg names
-    \s*
-    \)
-    \s*?
-    \n
-    \s*?
-    ((?:[^\n]+?;[^\n]*?$)+)?	# arg types
-    \s*?
-    )
-    ^
-    (\s+?\{.*?\n*)		# zzz
-    \Z
->mosx) {
-	my ($x);
+	$_ = <>;
 
-	$x = {
-		'all' => $1,
-		'aaa' => $2,
-		'spc_before' => $3,
-		'func_name' => $4,
-		'spc_after' => $5,
-		'arg_names' => $6,
-		'arg_types' => $7,
-		'zzz' => $8,
-	};
+	while (m<
+	    \A
+	    (				# all
+	    (.*?)			# aaa
+	    (\n|\s*?)			# spc_before
+	    ([A-Za-z_][A-Za-z0-9_]*?)	# func name
+	    (\n|\s*?)			# spc_after
+	    \s*?
+	    \(
+	    \s*
+	    ([^\)]*?)			# arg names
+	    \s*
+	    \)
+	    \s*?
+	    \n
+	    \s*?
+	    ((?:[^\n]+?;[^\n]*?$)+)?	# arg types
+	    \s*?
+	    )
+	    ^
+	    (\s+?\{.*?\n*)		# zzz
+	    \Z
+	>mosx) {
+		my ($x);
 
-	proc($x);
+		$x = {
+			'all' => $1,
+			'aaa' => $2,
+			'spc_before' => $3,
+			'func_name' => $4,
+			'spc_after' => $5,
+			'arg_names' => $6,
+			'arg_types' => $7,
+			'zzz' => $8,
+		};
 
-	$_ = $x->{zzz};
+		proc($x);
+
+		$_ = $x->{zzz};
+	}
+	print $_;
 }
-print $_;
 
 sub proc {
 	my ($x) = @_;
