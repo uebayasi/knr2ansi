@@ -32,9 +32,7 @@ sub main {
 	    (\s+?\{.*?\n*)		# zzz
 	    \Z
 	>mosx) {
-		my ($x);
-
-		$x = {
+		my $x = {
 			'all' => $1,
 			'aaa' => $2,
 			'spc_before' => $3,
