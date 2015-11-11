@@ -181,15 +181,24 @@ sub parse_arg_types {
 		    \Z
 		>mosx;
 
-#print STDERR 'XXX ', $line, " => name: ", $3, "\n";
-#print STDERR 'XXX ', $line, " => type: ", $1, $2 ? (" " . "$2") : "", "\n";
-#print STDERR 'XXX ', $1, $2, $3, $4, "\n";
+		my $x = {
+			'type' => $1,
+			'a' => $2,
+			'name' => $3,
+			'b' => $4,
+			'line' => $5,
+			'comment' => $6,
+		};
 
-		my $type = $1;
+#print STDERR 'XXX ', $line, " => name: ", $x->{name}, "\n";
+#print STDERR 'XXX ', $line, " => type: ", $x->{type}, $x->{a} ? (" " . "$x->{a}") : "", "\n";
+#print STDERR 'XXX ', $x->{type}, $x->{a}, $x->{name}, $x->{b}, "\n";
 
-		$res->{$3} = "$type $2\%s$4";
+		my $type = $x->{type};
 
-		$line = $5;
+		$res->{$x->{name}} = "$x->{type} $x->{a}\%s$x->{b}";
+
+		$line = $x->{line};
 		while ($line =~ m<
 		    \A
 		    ,
