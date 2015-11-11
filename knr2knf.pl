@@ -8,33 +8,59 @@ $_ = <>;
 
 while (m<
     \A
+    (				# all
     (.*?)			# aaa
     (\n|\s*?)			# spc_before
     ([A-Za-z_][A-Za-z0-9_]*?)	# func name
     (\n|\s*?)			# spc_after
-    \(([^\)]*?)\)		# arg names
-    \n
-    ((?:\s*[^\n]+?;[^\n]*?$)+)?	# arg types
     \s*?
+    \(
+    \s*
+    ([^\)]*?)			# arg names
+    \s*
+    \)
+    \s*?
+    \n
+    \s*?
+    ((?:[^\n]+?;[^\n]*?$)+)?	# arg types
+    \s*?
+    )
     ^
-    (\{.*?\n*)			# zzz
+    (\s+?\{.*?\n*)		# zzz
     \Z
 >mosx) {
-	my ($aaa, $spc_before, $func_name, $spc_after, $arg_names, $arg_types, $zzz) = ($1, $2, $3, $4, $5, $6, $7);
+	my ($all, $aaa, $spc_before, $func_name, $spc_after, $arg_names, $arg_types, $zzz) = ($1, $2, $3, $4, $5, $6, $7, $8);
 
-	$arg_types =~ s,^\s*,,gmos;
-	$arg_types =~ s,\s*$,,gmos;
-	$arg_types =~ s,\s\s+, ,gmos;
-
-	print STDERR 'func_name: ', $func_name, "\n";
-	print STDERR 'arg_names: ', $arg_names, "\n";
-	print STDERR 'arg_types: ', $arg_types, "\n";
+    if ($func_name =~ m<(?:if|while|for)>) {
+		print $all;
+	
+		$_ = $zzz;
+    } else {
+	if (1) {
+		print STDERR 'func_name: ', $func_name, "\n";
+		print STDERR 'arg_names: ', $arg_names, "\n";
+		print STDERR 'arg_types: ', $arg_types, "\n";
+	}
 
 	if ($arg_names && $arg_types) {
 		$arg_names = &parse_arg_names($arg_names);
-		#foreach my $n (@$arg_names) { print STDERR 'arg_names: ', $n, "\n"; }
 		$arg_types = &parse_arg_types($arg_types);
-		#foreach my $t (keys %$arg_types) { print STDERR 'arg_typess: ', $t, ' => ', $arg_types->{$t}, "\n"; }
+		if (1) {
+			foreach my $n (@$arg_names) {
+				print STDERR
+				    'arg_names: ',
+				    $n,
+				    "\n";
+			}
+			foreach my $t (keys %$arg_types) {
+				print STDERR
+				    'arg_typess: ',
+				    $t,
+				    ' => ',
+				    $arg_types->{$t},
+				    "\n";
+			}
+		}
 
 		print
 		    $aaa,
@@ -74,6 +100,7 @@ while (m<
 	
 		$_ = $zzz;
 	}
+    }
 }
 print $_;
 
