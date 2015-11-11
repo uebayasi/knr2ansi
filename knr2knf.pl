@@ -6,8 +6,8 @@ main();
 
 sub main {
 	local $/;
-	$_ = <>;
-	while (m<
+	my $content = <>;
+	while ($content =~ m<
 	    \A
 	    (				# all
 	    (.*?)			# aaa
@@ -41,9 +41,9 @@ sub main {
 			'zzz' => $8,
 		};
 		proc($x);
-		$_ = $x->{zzz};
+		$content = $x->{zzz};
 	}
-	print $_;
+	print $content;
 }
 
 sub proc {
