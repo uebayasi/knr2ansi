@@ -9,39 +9,39 @@ sub main {
 	my $content = <>;
 	while ($content =~ m<
 	    \A
-	    (.*?)			# aaa
-	    (				# all
+	    (.*?)			# AAA
+	    (				# ALL
 	    (\n|\s*?)			# spc_before
-	    ([A-Za-z_][A-Za-z0-9_]*?)	# func name
+	    ([A-Za-z_][A-Za-z0-9_]*?)	# func_name
 	    (\n|\s*?)			# spc_after
 	    \s*?
 	    \(
 	    \s*
-	    ([^\)]*?)			# arg names
+	    ([^\)]*?)			# arg_names_str
 	    \s*
 	    \)
 	    \s*?
 	    \n
 	    \s*?
-	    ((?:[^\n]+?;[^\n]*?$)+)?	# arg types
+	    ((?:[^\n]+?;[^\n]*?$)+)?	# arg_types_str
 	    \s*?
 	    ^
-	    )				# (all)
-	    (\s+?\{.*?\n*)		# zzz
+	    )				# (ALL)
+	    (\s+?\{.*?\n*)		# ZZZ
 	    \Z
 	>mosx) {
 		my $x = {
-			'aaa' => $1,
-			'all' => $2,
+			'AAA' => $1,
+			'ALL' => $2,
 			'spc_before' => $3,
 			'func_name' => $4,
 			'spc_after' => $5,
-			'arg_names' => $6,
-			'arg_types' => $7,
-			'zzz' => $8,
+			'arg_names_str' => $6,
+			'arg_types_str' => $7,
+			'ZZZ' => $8,
 		};
 		proc($x);
-		$content = $x->{zzz};
+		$content = $x->{ZZZ};
 	}
 	print $content;
 }
@@ -57,26 +57,28 @@ sub proc {
 
 sub print_stmt {
 	my ($x) = @_;
-	print $x->{aaa}, $x->{all};
+	print $x->{AAA}, $x->{ALL};
 }
 
 sub print_func {
 	my ($x) = @_;
 	dump1($x);
-	if ($x->{arg_names} && $x->{arg_types}) {
+	my $arg_names;
+	if ($x->{arg_names_str} && $x->{arg_types_str}) {
 		parse_args($x);
-		$x->{arg_names} = print_func_arg_names($x);
-	} elsif (!$x->{arg_names} && !$x->{arg_types}) {
-		$x->{arg_names} = 'void';
+		$arg_names = print_func_arg_names($x);
+	} elsif (!$x->{arg_names_str} && !$x->{arg_types_str}) {
+		$arg_names = 'void';
 	} else {
+		$arg_names = $x->{arg_names};
 	}
 	print
-	    $x->{aaa},
+	    $x->{AAA},
 	    $x->{spc_before},
 	    $x->{func_name},
 	    $x->{spc_after},
 	    '(',
-	    $x->{arg_names},
+	    $arg_names,
 	    ')',
 	    "\n";
 }
@@ -85,8 +87,8 @@ sub dump1 {
 	my ($x) = @_;
 	if (0) { return; }
 	print STDERR 'func_name: ', $x->{func_name}, "\n";
-	print STDERR 'arg_names: ', $x->{arg_names}, "\n";
-	print STDERR 'arg_types: ', $x->{arg_types}, "\n";
+	print STDERR 'arg_names: ', $x->{arg_names_str}, "\n";
+	print STDERR 'arg_types: ', $x->{arg_types_str}, "\n";
 }
 
 sub dump2 {
@@ -98,26 +100,26 @@ sub dump2 {
 		    $n,
 		    "\n";
 	}
-	foreach my $t (keys %{$x->{arg_types}}) {
+	foreach my $t (keys %{$x->{arg_fmts}}) {
 		print STDERR
-		    'arg_typess: ',
+		    'arg_types: ',
 		    $t,
 		    ' => ',
-		    $x->{arg_types}->{$t},
+		    $x->{arg_fmts}->{$t},
 		    "\n";
 	}
 }
 
 sub parse_args {
 	my ($x) = @_;
-	$x->{arg_names} = &parse_arg_names($x->{arg_names});
-	$x->{arg_types} = &parse_arg_types($x->{arg_types});
+	$x->{arg_names} = &parse_arg_names($x->{arg_names_str});
+	$x->{arg_fmts} = &parse_arg_types($x->{arg_types_str});
 	dump2($x);
 }
 
 sub parse_arg_names {
-	my ($arg_names) = @_;
-	my @res = split(/[,\s]+/, $_[0]);
+	my ($arg_names_str) = @_;
+	my @res = split(/[,\s]+/, $arg_names_str);
 	return \@res;
 }
 
@@ -126,7 +128,7 @@ sub parse_arg_names {
 sub parse_arg_types {
 	my ($arg_types) = @_;
 	my @lines = split(/\n/, $arg_types);
-	my $res = {};
+	my $fmts = {};
 	foreach my $line (@lines) {
 		$line =~ m<
 		    \A
@@ -151,7 +153,8 @@ sub parse_arg_types {
 			'line' => $5,
 			'comment' => $6,
 		};
-		parse_arg_types_iter(\$line, $res, $x);
+		parse_arg_types_iter($fmts, $x);
+		$line = $x->{line};
 		while ($line =~ m<
 		    \A
 		    ,
@@ -170,18 +173,18 @@ sub parse_arg_types {
 				'array' => $3,
 				'line' => $4,
 			};
-			parse_arg_types_iter(\$line, $res, $x);
+			parse_arg_types_iter($fmts, $x);
+			$line = $x->{line};
 		}
 	}
-	return $res;
+	return $fmts;
 }
 
 # XXX ugly
 sub parse_arg_types_iter {
-	my ($lineref, $res, $x) = @_;
+	my ($fmts, $x) = @_;
 	dump3($x);
-	$res->{$x->{name}} = "$x->{type} $x->{ptr}\%s$x->{array}";
-	${$lineref} = $x->{line};
+	$fmts->{$x->{name}} = "$x->{type} $x->{ptr}\%s$x->{array}";
 }
 
 sub print_func_arg_names {
@@ -196,7 +199,7 @@ sub print_func_arg_names {
 
 sub print_func_arg {
 	my ($x, $name) = @_;
-	sprintf($x->{arg_types}->{$name}, $name);
+	sprintf($x->{arg_fmts}->{$name}, $name);
 }
 
 sub dump3 {
