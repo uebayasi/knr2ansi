@@ -5,21 +5,22 @@ use strict;
 local $/;
 
 $_ = <>;
+
 while (m<
     \A
-    (.*?)
-    (\n|\s*?)
+    (.*?)			# aaa
+    (\n|\s*?)			# spc_before
     ([A-Za-z_][A-Za-z0-9_]*?)	# func name
-    (\n|\s*?)
+    (\n|\s*?)			# spc_after
     \(([^\)]*?)\)		# arg names
     \n
     ((?:\s*[^\n]+?;[^\n]*?$)+)?	# arg types
     \s*?
     ^
-    (\{.*?\n*)
+    (\{.*?\n*)			# zzz
     \Z
 >mosx) {
-	my ($a, $spc_before, $func_name, $spc_after, $arg_names, $arg_types, $b) = ($1, $2, $3, $4, $5, $6, $7);
+	my ($aaa, $spc_before, $func_name, $spc_after, $arg_names, $arg_types, $zzz) = ($1, $2, $3, $4, $5, $6, $7);
 
 	$arg_types =~ s,^\s*,,gmos;
 	$arg_types =~ s,\s*$,,gmos;
@@ -36,7 +37,7 @@ while (m<
 		#foreach my $t (keys %$arg_types) { print STDERR 'arg_typess: ', $t, ' => ', $arg_types->{$t}, "\n"; }
 
 		print
-		    $a,
+		    $aaa,
 		    $spc_before,
 		    $func_name,
 		    $spc_after,
@@ -49,20 +50,20 @@ while (m<
 		    ')',
 		    "\n";
 	
-		$_ = $b;
+		$_ = $zzz;
 	} elsif (!$arg_names && !$arg_types) {
 		print
-		    $a,
+		    $aaa,
 		    $spc_before,
 		    $func_name,
 		    $spc_after,
 		    '(void)',
 		    "\n";
 	
-		$_ = $b;
+		$_ = $zzz;
 	} else {
 		print
-		    $a,
+		    $aaa,
 		    $spc_before,
 		    $func_name,
 		    $spc_after,
@@ -71,7 +72,7 @@ while (m<
 		    ')',
 		    "\n";
 	
-		$_ = $b;
+		$_ = $zzz;
 	}
 }
 print $_;
