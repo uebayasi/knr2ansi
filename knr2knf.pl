@@ -9,8 +9,8 @@ sub main {
 	my $content = <>;
 	while ($content =~ m<
 	    \A
-	    (				# all
 	    (.*?)			# aaa
+	    (				# all
 	    (\n|\s*?)			# spc_before
 	    ([A-Za-z_][A-Za-z0-9_]*?)	# func name
 	    (\n|\s*?)			# spc_after
@@ -25,14 +25,14 @@ sub main {
 	    \s*?
 	    ((?:[^\n]+?;[^\n]*?$)+)?	# arg types
 	    \s*?
-	    )
 	    ^
+	    )				# (all)
 	    (\s+?\{.*?\n*)		# zzz
 	    \Z
 	>mosx) {
 		my $x = {
-			'all' => $1,
-			'aaa' => $2,
+			'aaa' => $1,
+			'all' => $2,
 			'spc_before' => $3,
 			'func_name' => $4,
 			'spc_after' => $5,
@@ -57,7 +57,7 @@ sub proc {
 
 sub print_stmt {
 	my ($x) = @_;
-	print $x->{all};
+	print $x->{aaa}, $x->{all};
 }
 
 sub print_func {
