@@ -26,9 +26,9 @@ while (m<
 	$arg_types =~ s,\s*$,,gmos;
 	$arg_types =~ s,\s\s+, ,gmos;
 
-	#print STDERR 'func_name: ', $func_name, "\n";
-	#print STDERR 'arg_names: ', $arg_names, "\n";
-	#print STDERR 'arg_types: ', $arg_types, "\n";
+	print STDERR 'func_name: ', $func_name, "\n";
+	print STDERR 'arg_names: ', $arg_names, "\n";
+	print STDERR 'arg_types: ', $arg_types, "\n";
 
 	if ($arg_names && $arg_types) {
 		$arg_names = &parse_arg_names($arg_names);
