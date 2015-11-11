@@ -21,13 +21,9 @@ sub main {
 	    \s*
 	    \)
 	    \s*?
-	    \n
-	    \s*?
-	    ((?:[^\n]+?;[^\n]*?$)+)?	# arg_types_str
-	    \s*?
-	    ^
+	    ([A-Za-z_][^{/*]*?;[^{/*A-Za-z_]*?)	# arg_types_str
 	    )				# (ALL)
-	    (\s+?\{.*?\n*)		# ZZZ
+	    ((?:\n*?\s*?)?\{.*)		# ZZZ
 	    \Z
 	>mosx) {
 		my $x = {
@@ -79,8 +75,7 @@ sub print_func {
 	    $x->{spc_after},
 	    '(',
 	    $arg_names,
-	    ')',
-	    "\n";
+	    ')';
 }
 
 sub dump1 {
