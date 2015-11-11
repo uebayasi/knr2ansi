@@ -21,6 +21,10 @@ while (m<
 >mosx) {
 	my ($a, $spc_before, $func_name, $spc_after, $arg_names, $arg_types, $b) = ($1, $2, $3, $4, $5, $6, $7);
 
+	$arg_types =~ s,^\s*,,gmos;
+	$arg_types =~ s,\s*$,,gmos;
+	$arg_types =~ s,\s\s+, ,gmos;
+
 	#print STDERR 'func_name: ', $func_name, "\n";
 	#print STDERR 'arg_names: ', $arg_names, "\n";
 	#print STDERR 'arg_types: ', $arg_types, "\n";
