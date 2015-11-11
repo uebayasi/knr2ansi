@@ -6,9 +6,7 @@ main();
 
 sub main {
 	local $/;
-
 	$_ = <>;
-
 	while (m<
 	    \A
 	    (				# all
@@ -42,9 +40,7 @@ sub main {
 			'arg_types' => $7,
 			'zzz' => $8,
 		};
-
 		proc($x);
-
 		$_ = $x->{zzz};
 	}
 	print $_;
@@ -52,7 +48,6 @@ sub main {
 
 sub proc {
 	my ($x) = @_;
-
 	if ($x->{func_name} =~ m<(?:if|for|while)>) {
 		print_statements($x);
 	} elsif ($x->{arg_names} && $x->{arg_types}) {
@@ -66,13 +61,11 @@ sub proc {
 
 sub print_statements {
 	my ($x) = @_;
-
 	print $x->{all};
 }
 
 sub print_func_names_types {
 	my ($x) = @_;
-
 	dump1($x);
 	parse_args($x);
 	print
@@ -92,7 +85,6 @@ sub print_func_names_types {
 
 sub print_func_void {
 	my ($x) = @_;
-
 	dump1($x);
 	print
 	    $x->{aaa},
@@ -105,7 +97,6 @@ sub print_func_void {
 
 sub print_func_misc {
 	my ($x) = @_;
-
 	dump1($x);
 	print
 	    $x->{aaa},
@@ -120,7 +111,6 @@ sub print_func_misc {
 
 sub dump1 {
 	my ($x) = @_;
-
 	if (0) { return; }
 	print STDERR 'func_name: ', $x->{func_name}, "\n";
 	print STDERR 'arg_names: ', $x->{arg_names}, "\n";
@@ -129,7 +119,6 @@ sub dump1 {
 
 sub dump2 {
 	my ($x) = @_;
-
 	if (0) { return; }
 	foreach my $n (@{$x->{arg_names}}) {
 		print STDERR
@@ -149,7 +138,6 @@ sub dump2 {
 
 sub parse_args {
 	my ($x) = @_;
-
 	$x->{arg_names} = &parse_arg_names($x->{arg_names});
 	$x->{arg_types} = &parse_arg_types($x->{arg_types});
 	dump2($x);
@@ -180,7 +168,6 @@ sub parse_arg_types {
 		    (?:.*?)?			# comment, etc.
 		    \Z
 		>mosx;
-
 		my $x = {
 			'type' => $1,
 			'a' => $2,
@@ -189,15 +176,9 @@ sub parse_arg_types {
 			'line' => $5,
 			'comment' => $6,
 		};
-
-#print STDERR 'XXX ', $line, " => name: ", $x->{name}, "\n";
-#print STDERR 'XXX ', $line, " => type: ", $x->{type}, $x->{a} ? (" " . "$x->{a}") : "", "\n";
-#print STDERR 'XXX ', $x->{type}, $x->{a}, $x->{name}, $x->{b}, "\n";
-
 		my $type = $x->{type};
-
-		$res->{$x->{name}} = "$x->{type} $x->{a}\%s$x->{b}";
-
+		dump3($x);
+		$res->{$x->{name}} = "$type $x->{a}\%s$x->{b}";
 		$line = $x->{line};
 		while ($line =~ m<
 		    \A
@@ -220,7 +201,14 @@ sub parse_arg_types {
 			$res->{$x->{name}} = "$type $x->{a}\%s$x->{b}";
 			$line = $x->{line};
 		}
-
 	}
 	return $res;
+}
+
+sub dump3 {
+	my ($x) = @_;
+	if (1) { return; }
+	print STDERR 'XXX ', $line, " => name: ", $x->{name}, "\n";
+	print STDERR 'XXX ', $line, " => type: ", $x->{type}, $x->{a} ? (" " . "$x->{a}") : "", "\n";
+	print STDERR 'XXX ', $x->{type}, $x->{a}, $x->{name}, $x->{b}, "\n";
 }
