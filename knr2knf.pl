@@ -33,7 +33,7 @@ while (m<
 
     if ($func_name =~ m<(?:if|while|for)>) {
 		print $all;
-	
+
 		$_ = $zzz;
     } else {
 	if (1) {
@@ -75,7 +75,7 @@ while (m<
 		    ),
 		    ')',
 		    "\n";
-	
+
 		$_ = $zzz;
 	} elsif (!$arg_names && !$arg_types) {
 		print
@@ -85,7 +85,7 @@ while (m<
 		    $spc_after,
 		    '(void)',
 		    "\n";
-	
+
 		$_ = $zzz;
 	} else {
 		print
@@ -97,7 +97,7 @@ while (m<
 		    $arg_names,
 		    ')',
 		    "\n";
-	
+
 		$_ = $zzz;
 	}
     }
@@ -153,7 +153,7 @@ sub parse_arg_types {
 			$res->{$2} = "$type $1\%s$3";
 			$line = $4;
 		}
-		
+
 	}
 	return $res;
 }
