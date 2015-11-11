@@ -149,6 +149,8 @@ sub parse_arg_names {
 	return \@res;
 }
 
+# XXX split by ','
+# XXX de-duplicate match pattern
 sub parse_arg_types {
 	my ($arg_types) = @_;
 	my @lines = split(/\n/, $arg_types);
@@ -159,56 +161,59 @@ sub parse_arg_types {
 		    \s*
 		    (.+?)			# type
 		    \s+?
-		    ([*]*?)?			# a
+		    ([*]*?)?			# ptr
 		    \s*
 		    ([A-Za-z_][A-Za-z0-9_]*?)	# name
-		    (\[\d*?\])?			# b
+		    (\[\d*?\])?			# array
 		    (,.+?)?			# line
 		    ;
 		    (?:.*?)?			# comment, etc.
 		    \Z
 		>mosx;
+		my $type = $1;
 		my $x = {
 			'type' => $1,
-			'a' => $2,
+			'ptr' => $2,
 			'name' => $3,
-			'b' => $4,
+			'array' => $4,
 			'line' => $5,
 			'comment' => $6,
 		};
-		my $type = $x->{type};
-		dump3($x);
-		$res->{$x->{name}} = "$type $x->{a}\%s$x->{b}";
-		$line = $x->{line};
+		parse_arg_types_iter(\$line, $res, $x);
 		while ($line =~ m<
 		    \A
 		    ,
 		    \s*
-		    ([*]*?)?			# a
+		    ([*]*?)?			# ptr
 		    \s*
 		    ([A-Za-z_][A-Za-z0-9_]*?)	# name
-		    (\[\d*?\])?			# b
+		    (\[\d*?\])?			# array
 		    (,.+?)?			# line
 		    \Z
 		>mosx) {
 			my $x = {
-				'a' => $1,
+				'type' => $type,
+				'ptr' => $1,
 				'name' => $2,
-				'b' => $3,
+				'array' => $3,
 				'line' => $4,
 			};
-
-			$res->{$x->{name}} = "$type $x->{a}\%s$x->{b}";
-			$line = $x->{line};
+			parse_arg_types_iter(\$line, $res, $x);
 		}
 	}
 	return $res;
 }
 
+# XXX
+sub parse_arg_types_iter {
+	my ($lineref, $res, $x) = @_;
+	dump3($x);
+	$res->{$x->{name}} = "$x->{type} $x->{ptr}\%s$x->{array}";
+	${$lineref} = $x->{line};
+}
+
 sub dump3 {
 	my ($x) = @_;
 	if (1) { return; }
-	print STDERR 'XXX ', $line, " => name: ", $x->{name}, "\n";
-	print STDERR 'XXX ', $line, " => type: ", $x->{type}, $x->{a} ? (" " . "$x->{a}") : "", "\n";
-	print STDERR 'XXX ', $x->{type}, $x->{a}, $x->{name}, $x->{b}, "\n";
+	print STDERR 'arg_types: ', $x->{type}, $x->{ptr}, $x->{name}, $x->{array}, "\n";
 }
