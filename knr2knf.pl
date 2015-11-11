@@ -49,9 +49,9 @@ while (m<
 	} elsif (!$arg_names && !$arg_types) {
 		print
 		    $a,
-		    $spc_after,
-		    $func_name,
 		    $spc_before,
+		    $func_name,
+		    $spc_after,
 		    '(void)',
 		    "\n";
 	
@@ -59,9 +59,9 @@ while (m<
 	} else {
 		print
 		    $a,
-		    $spc_after,
-		    $func_name,
 		    $spc_before,
+		    $func_name,
+		    $spc_after,
 		    '(',
 		    $arg_names,
 		    ')',
