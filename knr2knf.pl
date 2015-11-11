@@ -29,80 +29,94 @@ while (m<
     (\s+?\{.*?\n*)		# zzz
     \Z
 >mosx) {
-	my ($all, $aaa, $spc_before, $func_name, $spc_after, $arg_names, $arg_types, $zzz) = ($1, $2, $3, $4, $5, $6, $7, $8);
+	my ($x);
 
-    if ($func_name =~ m<(?:if|while|for)>) {
-		print $all;
+	$x = {
+		'all' => $1,
+		'aaa' => $2,
+		'spc_before' => $3,
+		'func_name' => $4,
+		'spc_after' => $5,
+		'arg_names' => $6,
+		'arg_types' => $7,
+		'zzz' => $8,
+	};
 
-		$_ = $zzz;
+    if ($x->{func_name} =~ m<(?:if|for|while)>) {
+		print $x->{all};
     } else {
-	if (1) {
-		print STDERR 'func_name: ', $func_name, "\n";
-		print STDERR 'arg_names: ', $arg_names, "\n";
-		print STDERR 'arg_types: ', $arg_types, "\n";
-	}
+	dump1($x);
 
-	if ($arg_names && $arg_types) {
-		$arg_names = &parse_arg_names($arg_names);
-		$arg_types = &parse_arg_types($arg_types);
-		if (1) {
-			foreach my $n (@$arg_names) {
-				print STDERR
-				    'arg_names: ',
-				    $n,
-				    "\n";
-			}
-			foreach my $t (keys %$arg_types) {
-				print STDERR
-				    'arg_typess: ',
-				    $t,
-				    ' => ',
-				    $arg_types->{$t},
-				    "\n";
-			}
-		}
+	if ($x->{arg_names} && $x->{arg_types}) {
+		$x->{arg_names} = &parse_arg_names($x->{arg_names});
+		$x->{arg_types} = &parse_arg_types($x->{arg_types});
+		dump2($x);
 
 		print
-		    $aaa,
-		    $spc_before,
-		    $func_name,
-		    $spc_after,
+		    $x->{aaa},
+		    $x->{spc_before},
+		    $x->{func_name},
+		    $x->{spc_after},
 		    '(',
 		    join(', ',
 			map {
-			    sprintf($arg_types->{$_}, $_);
-			} @$arg_names
+			    sprintf($x->{arg_types}->{$_}, $_);
+			} @{$x->{arg_names}}
 		    ),
 		    ')',
 		    "\n";
-
-		$_ = $zzz;
-	} elsif (!$arg_names && !$arg_types) {
+	} elsif (!$x->{arg_names} && !$x->{arg_types}) {
 		print
-		    $aaa,
-		    $spc_before,
-		    $func_name,
-		    $spc_after,
+		    $x->{aaa},
+		    $x->{spc_before},
+		    $x->{func_name},
+		    $x->{spc_after},
 		    '(void)',
 		    "\n";
-
-		$_ = $zzz;
 	} else {
 		print
-		    $aaa,
-		    $spc_before,
-		    $func_name,
-		    $spc_after,
+		    $x->{aaa},
+		    $x->{spc_before},
+		    $x->{func_name},
+		    $x->{spc_after},
 		    '(',
-		    $arg_names,
+		    $x->{arg_names},
 		    ')',
 		    "\n";
-
-		$_ = $zzz;
 	}
     }
+	$_ = $x->{zzz};
 }
 print $_;
+
+sub dump1 {
+	my ($x) = @_;
+
+	if (0) { return; }
+	print STDERR 'func_name: ', $x->{func_name}, "\n";
+	print STDERR 'arg_names: ', $x->{arg_names}, "\n";
+	print STDERR 'arg_types: ', $x->{arg_types}, "\n";
+}
+
+sub dump2 {
+	my ($x) = @_;
+
+	if (0) { return; }
+	foreach my $n (@{$x->{arg_names}}) {
+		print STDERR
+		    'arg_names: ',
+		    $n,
+		    "\n";
+	}
+	foreach my $t (keys %{$x->{arg_types}}) {
+		print STDERR
+		    'arg_typess: ',
+		    $t,
+		    ' => ',
+		    $x->{arg_types}->{$t},
+		    "\n";
+	}
+}
 
 sub parse_arg_names {
 	my ($arg_names) = @_;
