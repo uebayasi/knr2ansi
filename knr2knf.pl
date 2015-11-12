@@ -178,19 +178,19 @@ sub save_arg_fmts {
 	$fmts->{$x->{name}} = "$x->{type} $x->{ptr}\%s$x->{array}";
 }
 
+sub print_arg_fmts {
+	my ($fmts, $name) = @_;
+	sprintf($fmts->{$name}, $name);
+}
+
 sub print_func_arg_names {
 	my ($x) = @_;
 	# XXX Perl not being functional yet!
 	return join(', ',
 		map {
-			print_func_arg($x, $_);
+			print_arg_fmts($x->{arg_fmts}, $_);
 		} @{$x->{arg_names}}
 	);
-}
-
-sub print_func_arg {
-	my ($x, $name) = @_;
-	sprintf($x->{arg_fmts}->{$name}, $name);
 }
 
 sub dump1 {
