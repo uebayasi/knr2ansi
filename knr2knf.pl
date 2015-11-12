@@ -159,11 +159,30 @@ sub parse_arg_types {
 	my ($arg_types) = @_;
 	my $fmts = {};
 	foreach my $line (split(/;/, $arg_types)) {
-		if (not ($line =~ m/,/)) {
-			$line =~ m<
+		my @defs = split(/,/, $line);
+		my $first = shift @defs;
+		$first =~ m<
+		    \A
+		    \s*
+		    (.+?)			# type
+		    \s+?
+		    ([*]*?)?			# ptr
+		    \s*
+		    ([A-Za-z_][A-Za-z0-9_]*?)	# name
+		    (\[\d*?\])?			# array
+		    \Z
+		>mosx;
+		my $type = $1;
+		my $x = {
+			'type' => $1,
+			'ptr' => $2,
+			'name' => $3,
+			'array' => $4,
+		};
+		parse_arg_types_iter($fmts, $x);
+		foreach my $def (@defs) {
+			$def =~ m<
 			    \A
-			    \s*
-			    (.+?)			# type
 			    \s+?
 			    ([*]*?)?			# ptr
 			    \s*
@@ -172,52 +191,12 @@ sub parse_arg_types {
 			    \Z
 			>mosx;
 			my $x = {
-				'type' => $1,
-				'ptr' => $2,
-				'name' => $3,
-				'array' => $4,
+				'type' => $type,
+				'ptr' => $1,
+				'name' => $2,
+				'array' => $3,
 			};
 			parse_arg_types_iter($fmts, $x);
-		} else {
-			my @defs = split(/,/, $line);
-			$defs[0] =~ m<
-			    \A
-			    \s*
-			    (.+?)			# type
-			    \s+?
-			    ([*]*?)?			# ptr
-			    \s*
-			    ([A-Za-z_][A-Za-z0-9_]*?)	# name
-			    (\[\d*?\])?			# array
-			    \Z
-			>mosx;
-			my $type = $1;
-			my $x = {
-				'type' => $1,
-				'ptr' => $2,
-				'name' => $3,
-				'array' => $4,
-			};
-			parse_arg_types_iter($fmts, $x);
-			shift @defs;
-			foreach my $def (@defs) {
-				$def =~ m<
-				    \A
-				    \s+?
-				    ([*]*?)?			# ptr
-				    \s*
-				    ([A-Za-z_][A-Za-z0-9_]*?)	# name
-				    (\[\d*?\])?			# array
-				    \Z
-				>mosx;
-				my $x = {
-					'type' => $type,
-					'ptr' => $1,
-					'name' => $2,
-					'array' => $3,
-				};
-				parse_arg_types_iter($fmts, $x);
-			}
 		}
 	}
 	return $fmts;
