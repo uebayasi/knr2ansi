@@ -131,8 +131,8 @@ sub parse_arg_types {
 	my $fmts = {};
 	foreach my $line (split(/;/, $arg_types)) {
 		my @defs = split(/,/, $line);
-		my $first = shift @defs;
-		$first =~ m<
+		my $def = shift @defs;
+		$def =~ m<
 		    \A
 		    \s*
 		    (.+?)			# type
@@ -150,7 +150,7 @@ sub parse_arg_types {
 			'array' => $4,
 		};
 		save_arg_fmts($fmts, $x);
-		foreach my $def (@defs) {
+		foreach $def (@defs) {
 			$def =~ m<
 			    \A
 			    \s+?
