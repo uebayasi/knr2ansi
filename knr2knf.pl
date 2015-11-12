@@ -157,7 +157,7 @@ sub parse_arg_names {
 # XXX de-duplicate match pattern
 sub parse_arg_types {
 	my ($arg_types) = @_;
-	my @lines = split(/\n/, $arg_types);
+	my @lines = split(/;/, $arg_types);
 	my $fmts = {};
 	foreach my $line (@lines) {
 		$line =~ m<
@@ -170,8 +170,6 @@ sub parse_arg_types {
 		    ([A-Za-z_][A-Za-z0-9_]*?)	# name
 		    (\[\d*?\])?			# array
 		    (,.+?)?			# line
-		    ;
-		    (?:.*?)?			# comment, etc.
 		    \Z
 		>mosx;
 		my $type = $1;
@@ -181,7 +179,6 @@ sub parse_arg_types {
 			'name' => $3,
 			'array' => $4,
 			'line' => $5,
-			'comment' => $6,
 		};
 		parse_arg_types_iter($fmts, $x);
 		$line = $x->{line};
