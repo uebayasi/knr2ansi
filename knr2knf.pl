@@ -157,9 +157,8 @@ sub parse_arg_names {
 # XXX de-duplicate match pattern
 sub parse_arg_types {
 	my ($arg_types) = @_;
-	my @lines = split(/;/, $arg_types);
 	my $fmts = {};
-	foreach my $line (@lines) {
+	foreach my $line (split(/;/, $arg_types)) {
 		$line =~ m<
 		    \A
 		    \s*
