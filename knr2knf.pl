@@ -11,19 +11,28 @@ sub main {
 	    \A
 	    (.*?)			# AAA
 	    (				# ALL
-	    (\n|\s*?)			# spc_before
-	    ([A-Za-z_][A-Za-z0-9_]*?)	# func_name
-	    (\n|\s*?)			# spc_after
-	    \s*?
-	    \(
-	    \s*
-	    ([^\)]*?)			# arg_names_str
-	    \s*
-	    \)
-	    \s*?
-	    ([A-Za-z_][^{/*]*?;[^{/*A-Za-z_]*?)	# arg_types_str
+	     (\n|\s*?)			#  spc_before
+	     ([A-Za-z_][A-Za-z0-9_]*?)	#  func_name
+	     (\n|\s*?)			#  spc_after
+	     \s*?
+	     \(
+	     \s*
+	     ([^\)]*?)			#  arg_names_str
+	     \s*
+	     \)
+	     \s*?
+	     (				#  arg_types_str
+	      [A-Za-z0-9_]
+	      [^{/*]*?
+	      [;]
+	      [^A-Za-z0-9_{/*]*?
+	     )				#  (arg_types_str)
 	    )				# (ALL)
-	    ((?:\n*?\s*?)?\{.*)		# ZZZ
+	    (				# ZZZ
+	     (?:\n*?\s*?)?
+	     [{]
+	     .*
+	    )				# (ZZZ)
 	    \Z
 	>mosx) {
 		my $x = {
