@@ -4,23 +4,47 @@ use strict;
 
 main();
 
+#
+# /* comment */
+# int func (a, b, c)
+#   int a, *b;
+#   char *c;
+# {
+#   return 123;
+# }
+#
+# AAA -> "(...) comment */\nint "
+# ALL -> "func (...) char *c;"
+# func_name -> "func"
+# arg_names_str -> "a, b, c"
+# arg_types_str -> "int a, *b;\n  char *c;"
+# ZZZ -> "\n{\n  return 123;\n (...)"
+#
+
 sub main {
 	local $/;
 	my $content = <>;
 	while ($content =~ m<
 	    \A
+
+	# Preceding part (including function return type) saved as AAA.
 	    (.*?)			# AAA
+
+	# Interesting part saved as ALL.
 	    (				# ALL
-	     (\n|\s*?)			#  spc_before
+	     (\s*?)			#  spc_before
 	     ([A-Za-z_][A-Za-z0-9_]*?)	#  func_name
-	     (\n|\s*?)			#  spc_after
+	     (\s*?)			#  spc_after
 	     \s*?
 	     \(
-	     \s*
+	     \s*?
 	     ([^\)]*?)			#  arg_names_str
-	     \s*
+	     \s*?
 	     \)
 	     \s*?
+		# Do best to *guess* arg_types_str, because func_name +
+		# arg_names_str can easily match similar strings (e.g. "if
+		# (exp)").
 	     (				#  arg_types_str
 	      [A-Za-z0-9_]
 	      [^{/*]*?
@@ -28,6 +52,9 @@ sub main {
 	      [^A-Za-z0-9_{/*]*?
 	     )				#  (arg_types_str)
 	    )				# (ALL)
+
+	# Also do best to *guess* succeeding part (including function block
+	# start) saved as ZZZ.
 	    (				# ZZZ
 	     (?:\n*?\s*?)?
 	     [{]
