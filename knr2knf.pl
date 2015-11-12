@@ -153,8 +153,6 @@ sub parse_arg_names {
 	return [split(/[,\s]+/, $arg_names_str)];
 }
 
-# XXX split by ';', then ','
-# XXX de-duplicate match pattern
 sub parse_arg_types {
 	my ($arg_types) = @_;
 	my $fmts = {};
@@ -172,14 +170,14 @@ sub parse_arg_types {
 		    (\[\d*?\])?			# array
 		    \Z
 		>mosx;
-		my $type = $1;
 		my $x = {
 			'type' => $1,
 			'ptr' => $2,
 			'name' => $3,
 			'array' => $4,
 		};
-		parse_arg_types_iter($fmts, $x);
+		save_arg_fmts($fmts, $x);
+		my $type = $x->{type};
 		foreach my $def (@defs) {
 			$def =~ m<
 			    \A
@@ -196,14 +194,13 @@ sub parse_arg_types {
 				'name' => $2,
 				'array' => $3,
 			};
-			parse_arg_types_iter($fmts, $x);
+			save_arg_fmts($fmts, $x);
 		}
 	}
 	return $fmts;
 }
 
-# XXX ugly
-sub parse_arg_types_iter {
+sub save_arg_fmts {
 	my ($fmts, $x) = @_;
 	dump3($x);
 	$fmts->{$x->{name}} = "$x->{type} $x->{ptr}\%s$x->{array}";
