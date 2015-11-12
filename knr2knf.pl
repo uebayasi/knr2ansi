@@ -150,7 +150,6 @@ sub parse_arg_types {
 			'array' => $4,
 		};
 		save_arg_fmts($fmts, $x);
-		my $type = $x->{type};
 		foreach my $def (@defs) {
 			$def =~ m<
 			    \A
@@ -161,8 +160,8 @@ sub parse_arg_types {
 			    (\[\d*?\])?			# array
 			    \Z
 			>mosx;
-			my $x = {
-				'type' => $type,
+			$x = {
+				'type' => $x->{type},
 				'ptr' => $1,
 				'name' => $2,
 				'array' => $3,
