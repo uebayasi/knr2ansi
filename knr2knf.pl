@@ -114,33 +114,6 @@ sub print_func {
 	    ')';
 }
 
-sub dump1 {
-	my ($x) = @_;
-	if (0) { return; }
-	print STDERR 'func_name: ', $x->{func_name}, "\n";
-	print STDERR 'arg_names: ', $x->{arg_names_str}, "\n";
-	print STDERR 'arg_types: ', $x->{arg_types_str}, "\n";
-}
-
-sub dump2 {
-	my ($x) = @_;
-	if (0) { return; }
-	foreach my $n (@{$x->{arg_names}}) {
-		print STDERR
-		    'arg_names: ',
-		    $n,
-		    "\n";
-	}
-	foreach my $t (keys %{$x->{arg_fmts}}) {
-		print STDERR
-		    'arg_types: ',
-		    $t,
-		    ' => ',
-		    $x->{arg_fmts}->{$t},
-		    "\n";
-	}
-}
-
 sub parse_args {
 	my ($x) = @_;
 	$x->{arg_names} = &parse_arg_names($x->{arg_names_str});
@@ -219,6 +192,33 @@ sub print_func_arg_names {
 sub print_func_arg {
 	my ($x, $name) = @_;
 	sprintf($x->{arg_fmts}->{$name}, $name);
+}
+
+sub dump1 {
+	my ($x) = @_;
+	if (0) { return; }
+	print STDERR 'func_name: ', $x->{func_name}, "\n";
+	print STDERR 'arg_names: ', $x->{arg_names_str}, "\n";
+	print STDERR 'arg_types: ', $x->{arg_types_str}, "\n";
+}
+
+sub dump2 {
+	my ($x) = @_;
+	if (0) { return; }
+	foreach my $n (@{$x->{arg_names}}) {
+		print STDERR
+		    'arg_names: ',
+		    $n,
+		    "\n";
+	}
+	foreach my $t (keys %{$x->{arg_fmts}}) {
+		print STDERR
+		    'arg_types: ',
+		    $t,
+		    ' => ',
+		    $x->{arg_fmts}->{$t},
+		    "\n";
+	}
 }
 
 sub dump3 {
